@@ -14,6 +14,10 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
 #bar div.on{border-color:#fff;background-color:#fff3}
 #bar div i{position:absolute;left:2px;top:0;font:10px monospace;color:#fff;font-style:normal}
 #info{position:absolute;top:env(safe-area-inset-top,0px);left:6px;background:var(--p);padding:3px 8px;font:11px monospace;white-space:pre;border-radius:3px}
+input{user-select:text;-webkit-user-select:text}
+.mpb,.mpb h3,.mpb label,.mpb #mps{color:#fff!important}.mpb #mps{white-space:pre-line;margin:6px 0;font-size:13px}
+.mpb input{background:#1a1f27;color:#fff;border:1px solid #666;border-radius:4px;padding:8px;width:55%;font-size:16px}
+.mpb .row{display:flex;gap:8px;margin:6px 0}.mpb button:disabled{opacity:.4}
 #b_cam{position:fixed;top:max(6px,env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:30;padding:8px 14px;font-size:14px;opacity:.85;display:none}
 #ib{position:fixed;top:max(6px,env(safe-area-inset-top,0px));right:max(6px,env(safe-area-inset-right,0px));z-index:30;display:flex;gap:6px}
 #ib button{width:44px;height:44px;padding:0;font-size:20px;opacity:.75}
@@ -43,8 +47,8 @@ small{opacity:.7;max-width:560px}
 <div id="ib"><button id="b_inv">🎒</button><button id="b_menu">☰</button></div>
 <div id="tp"><button id="tj">Jump</button><button id="tpl">Place</button><button id="td">Dig</button></div>
 <div id="jb"><div id="jk"></div></div>
-<div id="menu" class="pn"><h1>minedust</h1><div id="mp">Multiplayer: connecting…</div>
-<button id="play">Play</button><button id="m_inv">Inventory</button><button id="m_set">Settings</button><button id="m_new">New random world</button><div id="ws"></div>
+<div id="menu" class="pn"><h1>minedust</h1><div id="mp">Multiplayer: offline</div>
+<button id="play">Play</button><button id="m_inv">Inventory</button><button id="m_set">Settings</button><button id="m_join">Join game</button><button id="m_new">New random world</button><div id="ws"></div>
 <small>WASD move · V / F5 camera · Space jump · Shift sneak · J fast · K fly · Click dig · Right-click place · 1-9 / wheel hotbar · E inventory · Esc menu</small></div>
 <div id="inv" class="pn"><h2>Inventory</h2><small>Select a hotbar slot below, then tap a block to put it there.</small><div id="grid"></div><button class="cl">Close</button></div>
 <div id="set" class="pn"><h2>Settings</h2><div id="sc"></div><button class="cl">Close</button></div>
@@ -163,10 +167,10 @@ function burst(x,y,z,id){if(!S.parts)return;const c=avg(tl(id,1));for(let i=0;i<
 // ---------- interaction ----------
 function ray(){const o=eye,d=fwd;let pv=null;for(let t=0;t<4;t+=.03){const x=Math.floor(o.x+d.x*t),y=Math.floor(o.y+d.y*t),z=Math.floor(o.z+d.z*t);if(get(x,y,z))return{x,y,z,prev:pv};pv=[x,y,z]}return null}
 const box=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.01,1.01,1.01)),new THREE.LineBasicMaterial({color:0}));sc.add(box);
-let room=null;const edits={};
+let mp=null;const edits={};
 function setB(x,y,z,id,net){if(x<0||z<0||y<0||x>=W||z>=W||y>=H)return;D[ix(x,y,z)]=id;const cx=x/CS|0,cz=z/CS|0;build(cx,cz);
  if(x%CS===0&&cx>0)build(cx-1,cz);if(x%CS===CS-1&&cx<NC-1)build(cx+1,cz);if(z%CS===0&&cz>0)build(cx,cz-1);if(z%CS===CS-1&&cz<NC-1)build(cx,cz+1);
- if(net){edits[x+','+y+','+z]=[x,y,z,id];room&&room.emit('b',{x,y,z,id,t:worldT}).catch(()=>{})}}
+ if(net){edits[x+','+y+','+z]=[x,y,z,id];mp&&mp.base.child('edits/'+x+'_'+y+'_'+z).set(id).catch(()=>{})}}
 function dig(){swing=1;const h=ray();if(h&&get(h.x,h.y,h.z)!==ID.obsidian||h&&h.y>0){const id=get(h.x,h.y,h.z);burst(h.x,h.y,h.z,id);setB(h.x,h.y,h.z,0,true)}}
 function place(){swing=1;const h=ray();if(!h||!h.prev)return;const[x,y,z]=h.prev,id=hot[sel];D[ix(x,y,z)]=id;const bad=hit(pl.p);D[ix(x,y,z)]=0;if(!bad)setB(x,y,z,id,true)}
 // ---------- UI / fullscreen / input ----------
@@ -178,7 +182,7 @@ const panels=['menu','inv','set'];
 function show(n){ui=n;$('b_cam').style.display=started&&!n?'block':'none';panels.forEach(p=>$(p).style.display=p===n?'flex':'none');$('tp').style.display=!n&&touch?'flex':'none';$('hud').style.display=started?'block':'none';$('bar').style.display=started?'flex':'none';
  if(n&&document.pointerLockElement)document.exitPointerLock();if(n==='inv')buildInv();if(n==='set')buildSet();if(n==='menu'){$('play').textContent=started?'Resume':'Play';$('ws').textContent='World seed: '+SEED}}
 function resume(){started=true;show(null);fsLand();if(!touch)cv.requestPointerLock()}
-$('play').onclick=resume;$('m_inv').onclick=()=>show('inv');$('m_set').onclick=()=>show('set');$('m_new').onclick=()=>{genWorld(Math.random()*2147483647|0);room&&room.emit('world',{seed:SEED,t:worldT}).catch(()=>{});resume()};
+$('play').onclick=resume;$('m_inv').onclick=()=>show('inv');$('m_set').onclick=()=>show('set');$('m_new').onclick=()=>{leaveMP('Hosting was reset by starting a new world');genWorld(Math.random()*2147483647|0);resume()};
 const VL=['👁 1st','🧍 3rd','🧍 3rd front'];function cycleView(){view=(view+1)%3;$('b_cam').textContent=VL[view]}$('b_cam').onclick=cycleView;$('b_inv').onclick=()=>show('inv');$('b_menu').onclick=()=>show('menu');
 document.querySelectorAll('.cl').forEach(b=>b.onclick=()=>show('menu'));
 $('b_inv').style.display=$('b_menu').style.display='flex';$('ib').style.display='none';
@@ -197,7 +201,7 @@ function buildSet(){let h=`<small>${glv} · ${gpu}<br>Browsers can't switch GPU 
   if(t==='chk')h+=`<label>${l}<input type=checkbox data-k=${k}${r[4]?' data-r=1':''} ${S[k]?'checked':''}></label>`;
   else if(t==='rng')h+=`<label>${l} <b id=v_${k}>${S[k]}</b><input type=range data-k=${k} min=${a} max=${b} step=${c} value=${S[k]}></label>`;
   else h+=`<label>${l}<select data-k=${k}${r[4]?' data-r=1':''}>${a.map(o=>{const v=Array.isArray(o)?o[0]:o,n=Array.isArray(o)?o[1]:o;return`<option value="${v}"${String(S[k])===String(v)?' selected':''}>${n}</option>`}).join('')}</select></label>`}
- h+=`<div style="display:flex;gap:8px;margin-top:12px"><button id=rs style="display:${restart?'block':'none'}">Apply &amp; restart</button><button id=rd>Reset defaults</button></div>`;$('sc').innerHTML=h;
+ h+=`<div style="display:flex;gap:8px;margin-top:12px"><button id=rs style="display:${restart?'block':'none'}">Apply &amp; restart</button><button id=rd>Reset defaults</button></div>`;h+=mpHTML();$('sc').innerHTML=h;mpBind();
  $('rs').onclick=()=>location.reload();$('rd').onclick=()=>{try{localStorage.removeItem(KEY)}catch(e){}location.reload()}}
 $('sc').addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(!k)return;let v=t.type==='checkbox'?+t.checked:t.type==='range'?+t.value:(isNaN(t.value)?t.value:+t.value);S[k]=v;
  if(k==='preset'&&PRE[v]){Object.assign(S,PRE[v]);buildSet()}else if($('v_'+k))$('v_'+k).textContent=v;
@@ -230,16 +234,49 @@ const others={};
 function avatar(){const g=new THREE.Group(),k=1.77/32,P=(geo,x,y)=>{const m=new THREE.Mesh(geo,skinMat);m.position.set(x*k,y*k,0);g.add(m)};
  P(skinBox(8,8,8,0,0,k),0,28);P(skinBox(8,12,4,16,16,k),0,18);P(skinBox(4,12,4,40,16,k),-6,18);P(skinBox(4,12,4,40,16,k,1),6,18);P(skinBox(4,12,4,0,16,k),-2,6);P(skinBox(4,12,4,0,16,k,1),2,6);
  sc.add(g);return{g,tp:new THREE.Vector3(),yaw:0,first:1}}
-(async()=>{try{room=await claude.use('room')}catch(e){}
- if(!room){$('mp').textContent='Multiplayer unavailable (single-player)';return}
- $('mp').textContent='Multiplayer: connected';
- room.on('b',m=>{if(m.isMe)return;const d=m.data;if(d.t!==worldT)return;edits[d.x+','+d.y+','+d.z]=[d.x,d.y,d.z,d.id];setB(d.x,d.y,d.z,d.id,false)});
- room.on('hello',m=>{if(!m.isMe)room.emit('sync',{t:worldT,seed:SEED,e:Object.values(edits)}).catch(()=>{})});
- room.on('sync',m=>{if(m.isMe)return;const d=m.data;if(d.t<worldT)genWorld(d.seed,d.t);else if(d.t!==worldT)return;for(const[x,y,z,id]of d.e){edits[x+','+y+','+z]=[x,y,z,id];put(x,y,z,id)}ch.forEach(o=>o.d=1)});
- room.on('world',m=>{if(!m.isMe)genWorld(m.data.seed,m.data.t)});
- room.onPeers(c=>{const live=new Set();for(const p of c.peers){if(p.isMe||!p.presence.p)continue;live.add(p.peer);const o=others[p.peer]||(others[p.peer]=avatar());o.tp.set(...p.presence.p);o.yaw=p.presence.r}
-  for(const k in others)if(!live.has(k)){sc.remove(others[k].g);delete others[k]}$('mp').textContent='Multiplayer: connected · '+live.size+' other player(s)'});
- room.emit('hello',{}).catch(()=>{})})();
+// ---------- multiplayer: host / join codes (Firebase Realtime Database) ----------
+const FB_URL='https://minedust-default-rtdb.firebaseio.com',MYID='p'+Math.random().toString(36).slice(2,8);
+let fbdb=null,fbUrl='',mpTxt='';
+const loadJS=src=>new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s)});
+async function fbReady(){
+ if(!window.firebase){await loadJS('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');await loadJS('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js')}
+ const u=(S.dbu||FB_URL).trim();
+ if(!fbdb||fbUrl!==u){if(firebase.apps.length)await firebase.app().delete();firebase.initializeApp({databaseURL:u,projectId:'minedust'});fbdb=firebase.database();fbUrl=u}
+ await new Promise((ok,no)=>{const r=fbdb.ref('.info/connected'),tm=setTimeout(()=>{r.off('value',f);no(new Error('timeout'))},9000),f=s=>{if(s.val()){clearTimeout(tm);r.off('value',f);ok()}};r.on('value',f)})}
+function mpMsg(m){mpTxt=m;mpRender()}
+function mpRender(){const n=Object.keys(others).length,st=mp?(mp.host?'Hosting':'Joined')+' · code '+mp.code+' · '+n+' other player(s)':'Not connected';
+ if($('mp'))$('mp').textContent='Multiplayer: '+(mp?(mp.host?'hosting ':'joined ')+mp.code+' · '+n+' other(s)':'offline');
+ if($('mps'))$('mps').textContent=st+(mpTxt?'\n'+mpTxt:'');
+ const h=$('mp_host'),s=$('mp_stop');if(h){h.textContent=mp&&mp.host?'📋 Copy code '+mp.code:'Host game';h.disabled=!!mp&&!mp.host}if(s)s.style.display=mp?'block':'none'}
+function mpHTML(){return `<div class=mpb><h3>Multiplayer</h3><div id=mps></div><div class=row><button id=mp_host></button><button id=mp_stop>${'Stop'}</button></div>
+<label>Join code<input id=mp_code maxlength=12 autocapitalize=characters autocomplete=off spellcheck=false placeholder="PASTE CODE"></label><div class=row><button id=mp_join>Join</button></div>
+<label>Database URL<input id=mp_db value="${S.dbu||FB_URL}"></label></div>`}
+function mpBind(){$('mp_host').onclick=()=>mp&&mp.host?copyCode(mp.code):mpHost();$('mp_stop').onclick=()=>leaveMP('Stopped');
+ $('mp_join').onclick=()=>mpJoin($('mp_code').value);$('mp_code').onkeydown=e=>{if(e.key==='Enter')mpJoin($('mp_code').value)};
+ $('mp_db').onchange=e=>{S.dbu=e.target.value.trim();sv();mpMsg('Database URL saved')};mpRender()}
+async function copyCode(c){try{await navigator.clipboard.writeText(c);mpMsg('Code '+c+' copied — send it to your friends')}catch(e){mpMsg('Code: '+c+' (tap and copy it manually)')}}
+const dirty=(x,z)=>{const cx=x/CS|0,cz=z/CS|0,m=(a,b)=>{if(a>=0&&b>=0&&a<NC&&b<NC)ch[b*NC+a].d=1};m(cx,cz);if(x%CS===0)m(cx-1,cz);if(x%CS===CS-1)m(cx+1,cz);if(z%CS===0)m(cx,cz-1);if(z%CS===CS-1)m(cx,cz+1)};
+function onEdit(s){const[x,y,z]=s.key.split('_').map(Number),id=s.val();edits[x+','+y+','+z]=[x,y,z,id];if(get(x,y,z)===id)return;put(x,y,z,id);dirty(x,z)}
+function onPl(s){if(s.key===MYID)return;const v=s.val();if(!v||!v.p)return;const o=others[s.key]||(others[s.key]=avatar());o.tp.set(v.p[0],v.p[1],v.p[2]);o.yaw=v.r;mpRender()}
+function attach(code,host){const base=fbdb.ref('rooms/'+code);mp={code,host,base,off:[],me:base.child('players/'+MYID),ready:0};
+ const on=(r,ev,fn)=>{r.on(ev,fn);mp.off.push(()=>r.off(ev,fn))};
+ on(base.child('edits'),'child_added',onEdit);on(base.child('edits'),'child_changed',onEdit);
+ on(base.child('players'),'child_added',onPl);on(base.child('players'),'child_changed',onPl);
+ on(base.child('players'),'child_removed',s=>{const o=others[s.key];if(o){sc.remove(o.g);delete others[s.key]}mpRender()});
+ on(base.child('meta'),'value',s=>{if(!mp)return;if(s.exists())mp.ready=1;else if(mp.ready&&!mp.host)leaveMP('The host ended the session')});
+ mp.me.onDisconnect().remove();mp.me.set({p:[pl.p.x,pl.p.y,pl.p.z],r:pl.yaw});mpRender()}
+function leaveMP(msg){if(!mp){if(msg)mpMsg(msg);return}const m=mp;mp=null;m.off.forEach(f=>f());try{m.me.onDisconnect().cancel();m.me.remove();if(m.host)m.base.remove()}catch(e){}
+ for(const k in others){sc.remove(others[k].g);delete others[k]}mpMsg(msg||'')}
+const newCode=()=>{const a='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<6;i++)c+=a[Math.random()*a.length|0];return c};
+async function mpHost(){if(mp)return;mpMsg('Connecting…');
+ try{await fbReady();let code,i=0;do{code=newCode();if(!(await fbdb.ref('rooms/'+code+'/meta').once('value')).exists())break}while(++i<6);
+  const base=fbdb.ref('rooms/'+code);await base.child('meta').set({seed:SEED,t:worldT,host:MYID,at:firebase.database.ServerValue.TIMESTAMP});
+  const ed={};for(const k in edits){const e=edits[k];ed[e[0]+'_'+e[1]+'_'+e[2]]=e[3]}if(Object.keys(ed).length)await base.child('edits').update(ed);
+  attach(code,true);copyCode(code)}catch(e){mpMsg('Could not host. Check the Database URL (region) and that the database rules allow "rooms".')}}
+async function mpJoin(c){c=(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length!==6)return mpMsg('Enter the 6-character code');if(mp&&mp.code===c)return mpMsg('Already in this game');
+ mpMsg('Joining…');try{await fbReady();const s=await fbdb.ref('rooms/'+c+'/meta').once('value');if(!s.exists())return mpMsg('Code not found — ask the host for a fresh code');
+  if(mp)leaveMP();const m=s.val();genWorld(m.seed,m.t);attach(c,false);mpMsg('Joined '+c);resume()}catch(e){mpMsg('Could not join. Check the Database URL (region) and rules.')}}
+$('m_join').onclick=()=>{show('set');setTimeout(()=>{const i=$('mp_code');i.scrollIntoView({block:'center'});i.focus()},60)};
 // ---------- loop ----------
 genWorld(Math.random()*2147483647|0);const me3=avatar();me3.g.visible=false;setSel(0);show('menu');applyLive();
 let last=performance.now(),lp=0,fc=0,ft=0,fps=0,gt=0;
@@ -269,7 +306,7 @@ function tick(now){requestAnimationFrame(tick);const el=now-last;if(S.fps&&el<10
  for(const k in others){const o=others[k];if(o.first){o.g.position.copy(o.tp);o.first=0}o.g.position.lerp(o.tp,Math.min(1,dt*12));o.g.rotation.y=o.yaw+Math.PI}
  pump();
  const h=started&&!ui?ray():null;box.visible=!!h;if(h)box.position.set(h.x+.5,h.y+.5,h.z+.5);
- if(room&&now-lp>80){lp=now;room.presence({p:[pl.p.x,pl.p.y,pl.p.z],r:pl.yaw}).catch(()=>{})}
+ if(mp&&now-lp>110){lp=now;mp.me.set({p:[+pl.p.x.toFixed(2),+pl.p.y.toFixed(2),+pl.p.z.toFixed(2)],r:+pl.yaw.toFixed(2)}).catch(()=>{})}
  $('info').textContent=`${fps.toFixed(0)} FPS · ${glv} · res ${Math.round(S.res*dyn)}%\nXYZ ${pl.p.x.toFixed(1)} ${pl.p.y.toFixed(1)} ${pl.p.z.toFixed(1)}${pl.fast?' FAST':''}${pl.fly?' FLY':''}`;
  R.clear();R.render(sc,cam);if(!view){R.clearDepth();R.render(hs,hc)}}
 requestAnimationFrame(tick);
