@@ -18,6 +18,10 @@ input{user-select:text;-webkit-user-select:text}
 .mpb,.mpb h3,.mpb label,.mpb #mps{color:#fff!important}.mpb #mps{white-space:pre-line;margin:6px 0;font-size:13px}
 .mpb input{background:#1a1f27;color:#fff;border:1px solid #666;border-radius:4px;padding:8px;width:55%;font-size:16px}
 .mpb .row{display:flex;gap:8px;margin:6px 0}.mpb button:disabled{opacity:.4}
+#hearts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(6px,env(safe-area-inset-bottom,0px)) + min(48px,9vw) + 18px);display:none;gap:3px;z-index:6;pointer-events:none}
+#hearts img{width:min(24px,4.6vw);height:min(24px,4.6vw);image-rendering:pixelated}
+#hurt{position:fixed;inset:0;pointer-events:none;background:radial-gradient(transparent 35%,rgba(200,0,0,.75));opacity:0;z-index:6}
+#toast{position:fixed;top:28%;left:50%;transform:translateX(-50%);color:#fff;font:bold 24px system-ui;text-shadow:0 2px 6px #000;z-index:40;pointer-events:none;opacity:0;transition:opacity .4s;text-align:center}
 #b_cam{position:fixed;top:max(6px,env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:30;padding:8px 14px;font-size:14px;opacity:.85;display:none}
 #ib{position:fixed;top:max(6px,env(safe-area-inset-top,0px));right:max(6px,env(safe-area-inset-right,0px));z-index:30;display:flex;gap:6px}
 #ib button{width:44px;height:44px;padding:0;font-size:20px;opacity:.75}
@@ -47,6 +51,7 @@ small{opacity:.7;max-width:560px}
 <div id="ib"><button id="b_inv">🎒</button><button id="b_menu">☰</button></div>
 <div id="tp"><button id="tj">Jump</button><button id="tpl">Place</button><button id="td">Dig</button></div>
 <div id="jb"><div id="jk"></div></div>
+<div id="hearts"></div><div id="hurt"></div><div id="toast"></div>
 <div id="menu" class="pn"><h1>minedust</h1><div id="mp">Multiplayer: offline</div>
 <button id="play">Play</button><button id="m_inv">Inventory</button><button id="m_set">Settings</button><button id="m_join">Join game</button><button id="m_new">New random world</button><div id="ws"></div>
 <small>WASD move · V / F5 camera · Space jump · Shift sneak · J fast · K fly · Click dig · Right-click place · 1-9 / wheel hotbar · E inventory · Esc menu</small></div>
@@ -115,7 +120,7 @@ for(let x=3;x<W-3;x+=5)for(let z=3;z<W-3;z+=5){const px=x+(hh(x,z)*3|0),pz=z+(hh
  for(let y=1;y<=th;y++)put(px,h+y,pz,tr);
  for(let dx=-2;dx<=2;dx++)for(let dz=-2;dz<=2;dz++)for(let dy=th-2;dy<=th+1;dy++){const m=pine?(dy>th-1?0:dy>th-3?1:2):(dy>th?1:2);if(Math.abs(dx)+Math.abs(dz)<=m+(pine?0:1)&&!(dx===0&&dz===0&&dy<=th)&&!get(px+dx,h+dy,pz+dz))put(px+dx,h+dy,pz+dz,lf)}}
 ch.forEach(o=>{if(o.m){sc.remove(o.m);o.m.geometry.dispose();o.m=null}o.b=0;o.d=1});boot=true;spawn()}
-function spawn(){let x=64,z=64;for(let i=0;i<80;i++){const a=20+(Math.random()*88|0),b=20+(Math.random()*88|0),h=HM[b*W+a];if(h<=16&&i<60)continue;if(get(a,h+1,b)||get(a,h+2,b))continue;x=a;z=b;break}
+function spawn(){fallReset=1;let x=64,z=64;for(let i=0;i<80;i++){const a=20+(Math.random()*88|0),b=20+(Math.random()*88|0),h=HM[b*W+a];if(h<=16&&i<60)continue;if(get(a,h+1,b)||get(a,h+2,b))continue;x=a;z=b;break}
  pl.p.set(x+.5,HM[z*W+x]+1.01,z+.5);pl.v.set(0,0,0)}
 // ---------- chunk meshing (typed, compact attributes, frustum-culled) ----------
 const FD=[[1,0,0,[1,0,0,1,0,1,1,1,0,1,1,1],.8],[-1,0,0,[0,0,1,0,0,0,0,1,1,0,1,0],.8],[0,1,0,[0,1,0,1,1,0,0,1,1,1,1,1],1],[0,-1,0,[0,0,1,1,0,1,0,0,0,1,0,0],.5],[0,0,1,[1,0,1,0,0,1,1,1,1,0,1,1],.9],[0,0,-1,[0,0,0,1,0,0,0,1,0,1,1,0],.9]];
@@ -171,7 +176,7 @@ let mp=null;const edits={};
 function setB(x,y,z,id,net){if(x<0||z<0||y<0||x>=W||z>=W||y>=H)return;D[ix(x,y,z)]=id;const cx=x/CS|0,cz=z/CS|0;build(cx,cz);
  if(x%CS===0&&cx>0)build(cx-1,cz);if(x%CS===CS-1&&cx<NC-1)build(cx+1,cz);if(z%CS===0&&cz>0)build(cx,cz-1);if(z%CS===CS-1&&cz<NC-1)build(cx,cz+1);
  if(net){edits[x+','+y+','+z]=[x,y,z,id];mp&&mp.base.child('edits/'+x+'_'+y+'_'+z).set(id).catch(()=>{})}}
-function dig(){swing=1;const h=ray();if(h&&get(h.x,h.y,h.z)!==ID.obsidian||h&&h.y>0){const id=get(h.x,h.y,h.z);burst(h.x,h.y,h.z,id);setB(h.x,h.y,h.z,0,true)}}
+function dig(){swing=1;if(mp){const k=hitPlayer();if(k){mp.base.child('hits/'+k).push({f:MYID}).catch(()=>{});return}}const h=ray();if(h&&get(h.x,h.y,h.z)!==ID.obsidian||h&&h.y>0){const id=get(h.x,h.y,h.z);burst(h.x,h.y,h.z,id);setB(h.x,h.y,h.z,0,true)}}
 function place(){swing=1;const h=ray();if(!h||!h.prev)return;const[x,y,z]=h.prev,id=hot[sel];D[ix(x,y,z)]=id;const bad=hit(pl.p);D[ix(x,y,z)]=0;if(!bad)setB(x,y,z,id,true)}
 // ---------- UI / fullscreen / input ----------
 let ui='menu',started=false,locked=false,digH=0,plH=0,dcd=0,fsT=0;
@@ -179,7 +184,7 @@ async function fsLand(){const n=performance.now();if(n-fsT<400)return;fsT=n;cons
  try{if(!document.fullscreenElement&&!document.webkitFullscreenElement)await(e.requestFullscreen?e.requestFullscreen({navigationUI:'hide'}):e.webkitRequestFullscreen())}catch(x){}
  try{await screen.orientation.lock('landscape')}catch(x){}}
 const panels=['menu','inv','set'];
-function show(n){ui=n;$('b_cam').style.display=started&&!n?'block':'none';panels.forEach(p=>$(p).style.display=p===n?'flex':'none');$('tp').style.display=!n&&touch?'flex':'none';$('hud').style.display=started?'block':'none';$('bar').style.display=started?'flex':'none';
+function show(n){ui=n;$('b_cam').style.display=started&&!n?'block':'none';$('hearts').style.display=started&&!n?'flex':'none';panels.forEach(p=>$(p).style.display=p===n?'flex':'none');$('tp').style.display=!n&&touch?'flex':'none';$('hud').style.display=started?'block':'none';$('bar').style.display=started?'flex':'none';
  if(n&&document.pointerLockElement)document.exitPointerLock();if(n==='inv')buildInv();if(n==='set')buildSet();if(n==='menu'){$('play').textContent=started?'Resume':'Play';$('ws').textContent='World seed: '+SEED}}
 function resume(){started=true;show(null);fsLand();if(!touch)cv.requestPointerLock()}
 $('play').onclick=resume;$('m_inv').onclick=()=>show('inv');$('m_set').onclick=()=>show('set');$('m_new').onclick=()=>{leaveMP('Hosting was reset by starting a new world');genWorld(Math.random()*2147483647|0);resume()};
@@ -264,7 +269,7 @@ function attach(code,host){const base=fbdb.ref('rooms/'+code);mp={code,host,base
  on(base.child('players'),'child_added',onPl);on(base.child('players'),'child_changed',onPl);
  on(base.child('players'),'child_removed',s=>{const o=others[s.key];if(o){sc.remove(o.g);delete others[s.key]}mpRender()});
  on(base.child('meta'),'value',s=>{if(!mp)return;if(s.exists())mp.ready=1;else if(mp.ready&&!mp.host)leaveMP('The host ended the session')});
- mp.me.onDisconnect().remove();mp.me.set({p:[pl.p.x,pl.p.y,pl.p.z],r:pl.yaw});mpRender()}
+ mp.me.onDisconnect().remove();base.child('hits/'+MYID).remove();on(base.child('hits/'+MYID),'child_added',s=>{s.ref.remove();const n=performance.now();if(n<lastHit+600||n<invUntil)return;lastHit=n;hurt(1,'pvp')});mp.me.set({p:[pl.p.x,pl.p.y,pl.p.z],r:pl.yaw});mpRender()}
 function leaveMP(msg){if(!mp){if(msg)mpMsg(msg);return}const m=mp;mp=null;m.off.forEach(f=>f());try{m.me.onDisconnect().cancel();m.me.remove();if(m.host)m.base.remove()}catch(e){}
  for(const k in others){sc.remove(others[k].g);delete others[k]}mpMsg(msg||'')}
 const newCode=()=>{const a='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<6;i++)c+=a[Math.random()*a.length|0];return c};
@@ -277,6 +282,17 @@ async function mpJoin(c){c=(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.l
  mpMsg('Joining…');try{await fbReady();const s=await fbdb.ref('rooms/'+c+'/meta').once('value');if(!s.exists())return mpMsg('Code not found — ask the host for a fresh code');
   if(mp)leaveMP();const m=s.val();genWorld(m.seed,m.t);attach(c,false);mpMsg('Joined '+c);resume()}catch(e){mpMsg('Could not join. Check the Database URL (region) and rules.')}}
 $('m_join').onclick=()=>{show('set');setTimeout(()=>{const i=$('mp_code');i.scrollIntoView({block:'center'});i.focus()},60)};
+// ---------- health: 9 hearts, fall damage (8+ blocks), player attacks ----------
+const HEART="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMBAMAAACkW0HUAAAAKlBMVEUAYQBgAABnAABoAABwAACPAACfAACvAAC3AAC/AADfAAD3AAD+AAD/AAB1BtoLAAAAAXRSTlMAQObYZgAAAE5JREFUCNdjYE0LACKGqLtLgYgh9+41IAJSd84Cqai7QLCUgRNETWBgWXv37i0HBoaau3ePMzAwaNy92wSkmKu3GwApBvFCEMnApMDAAACP5SGK6NtKaQAAAABJRU5ErkJggg==",GONE="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4AWNgYAAAAAMAAYz4OToAAAAASUVORK5CYII=";
+let hp=9,lastDmg=0,regenAt=0,lastHit=0,invUntil=0,fallReset=1;pl.peak=0;
+const hbox=$('hearts');for(let i=0;i<9;i++){const im=new Image();im.draggable=false;hbox.appendChild(im)}
+function drawHearts(){[...hbox.children].forEach((im,i)=>im.src=i<hp?HEART:GONE)}
+function toast(m){const e=$('toast');e.textContent=m;e.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.opacity=0,1800)}
+function hurt(n,src){hp=Math.max(0,hp-n);lastDmg=performance.now();drawHearts();const h=$('hurt');h.style.transition='none';h.style.opacity=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{h.style.transition='opacity .5s';h.style.opacity=0}));if(hp<=0)die(src)}
+function die(src){toast(src==='fall'?'You fell to your death':src==='pvp'?'You were killed':'You died');hp=9;invUntil=performance.now()+2500;lastDmg=performance.now();spawn();drawHearts()}
+function hitPlayer(){for(let t=0;t<4;t+=.05){const x=eye.x+fwd.x*t,y=eye.y+fwd.y*t,z=eye.z+fwd.z*t;if(get(Math.floor(x),Math.floor(y),Math.floor(z)))return null;
+ for(const k in others){const p=others[k].g.position;if(Math.abs(x-p.x)<.4&&Math.abs(z-p.z)<.4&&y>p.y-.1&&y<p.y+1.9)return k}}return null}
+drawHearts();
 // ---------- loop ----------
 genWorld(Math.random()*2147483647|0);const me3=avatar();me3.g.visible=false;setSel(0);show('menu');applyLive();
 let last=performance.now(),lp=0,fc=0,ft=0,fps=0,gt=0;
@@ -286,7 +302,11 @@ function tick(now){requestAnimationFrame(tick);const el=now-last;if(S.fps&&el<10
  if(started&&!ui){const f=(keys.KeyW?1:0)-(keys.KeyS?1:0)-mv[1],r=(keys.KeyD?1:0)-(keys.KeyA?1:0)+mv[0],sp=(pl.fast?S.f:S.w)*((keys.ShiftLeft||keys.ShiftRight)&&!pl.fly?.5:1),sn=Math.sin(pl.yaw),cs=Math.cos(pl.yaw);
   let vx=-sn*f+cs*r,vz=-cs*f-sn*r;const l=Math.hypot(vx,vz);if(l>1){vx/=l;vz/=l}pl.v.x=vx*sp;pl.v.z=vz*sp;spd=Math.hypot(vx,vz)*sp;
   if(pl.fly)pl.v.y=((keys.Space?1:0)-(keys.ShiftLeft?1:0))*sp;else{pl.v.y-=S.g*dt;if(pl.gnd&&keys.Space)pl.v.y=S.j}
-  move(dt);if(pl.p.y<-20)pl.p.set(64.5,45,64.5);
+  if(fallReset){fallReset=0;pl.peak=pl.p.y}
+  move(dt);
+  if(pl.fly)pl.peak=pl.p.y;else if(pl.gnd){const f=pl.peak-pl.p.y;pl.peak=pl.p.y;if(f>=8)hurt(Math.floor(f)-7,'fall')}else if(pl.p.y>pl.peak)pl.peak=pl.p.y;
+  {const nw=performance.now();if(hp<9&&nw-lastDmg>6000&&nw-regenAt>10000){hp++;regenAt=nw;drawHearts()}}
+  if(pl.p.y<-20)hurt(99,'void');
   dcd-=dt;if((digH||plH)&&dcd<=0){digH?dig():place();dcd=.2}
   if(pl.gnd||pl.fly)pl.bt+=spd*dt*1.7}
  const mvg=(pl.gnd&&spd>.2)?1:0;pl.mv+=(mvg-pl.mv)*Math.min(1,dt*8);const b=S.bob/100,bs=Math.sin(pl.bt*2)*pl.mv*b,bc=Math.cos(pl.bt)*pl.mv*b;
