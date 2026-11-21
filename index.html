@@ -22,6 +22,28 @@ input{user-select:text;-webkit-user-select:text}
 #hearts img{width:min(24px,4.6vw);height:min(24px,4.6vw);image-rendering:pixelated}
 #hurt{position:fixed;inset:0;pointer-events:none;background:radial-gradient(transparent 35%,rgba(200,0,0,.75));opacity:0;z-index:6}
 #toast{position:fixed;top:28%;left:50%;transform:translateX(-50%);color:#fff;font:bold 24px system-ui;text-shadow:0 2px 6px #000;z-index:40;pointer-events:none;opacity:0;transition:opacity .4s;text-align:center}
+#main,#newworld{background:linear-gradient(#7fa9ff,#a8c6ff);color:#fff;justify-content:flex-start;padding:8px 10px 10px;overflow:auto}
+#main i{position:absolute;background:rgba(120,120,175,.35);transform:skewX(-28deg);pointer-events:none}
+.brand{position:absolute;left:8px;top:4px;font-size:clamp(13px,3vh,19px);text-shadow:0 1px 3px #0008}
+.logo{font:900 clamp(24px,7vh,46px)/1 'Courier New',monospace;letter-spacing:.12em;color:#8c8c8c;-webkit-text-stroke:2px #262626;text-shadow:3px 3px 0 #3d3d3d;margin:0 0 4px;position:relative}
+.mw{width:min(780px,97vw);text-align:left;font-size:clamp(13px,3.5vh,18px);position:relative}
+.tabs{display:flex;gap:2px;align-items:flex-end}
+.tab{background:#5d6b78;border:1px solid #2c3640;border-bottom:0;border-radius:3px 3px 0 0;padding:.45em .8em;font-size:1em;color:#fff}.tab.on{background:#41597a}
+.gear{background:#2e2a45;border:2px solid #666;padding:.15em .5em;font-size:1.25em;color:#ddd;border-radius:3px;margin-bottom:2px}
+.tb{background:#41597a;padding:12px;border-radius:0 3px 3px 3px}
+.cols{display:flex;gap:18px;flex-wrap:wrap}.opts{flex:1 1 200px}.wl{flex:1 1 300px}
+#wlist{background:#1f1f1f;height:27vh;min-height:84px;overflow:auto;border:1px solid #111;margin:.4em 0;touch-action:pan-y}
+#wlist div{padding:.25em .5em;cursor:pointer}#wlist .on{background:#4a7a30}
+.mb{background:#3b3b3b;border:1px solid #1d1d1d;color:#fff;border-radius:2px;padding:.5em 1em;font-size:1em;flex:1}.mb.big{padding:.6em 1.4em}
+.row{display:flex;gap:6px;margin-top:6px}.row.end{justify-content:flex-end}.row.end .mb{flex:0 0 72%}.row.mid{justify-content:center;margin-top:14px}.row.mid .mb{flex:0 0 38%}
+.ck{display:flex;align-items:center;gap:.5em;padding:.2em 0}
+.ck input{appearance:none;-webkit-appearance:none;width:1.5em;height:1.5em;background:#8c8c8c;border:2px solid #4a4a4a;margin:0;flex:none}
+.ck input:checked::after{content:'✓';display:block;text-align:center;line-height:1.25em;color:#fff}
+.mw input:not([type=checkbox]){width:100%;background:#808080;border:1px solid #333;color:#fff;padding:.5em;font-size:1em;margin-bottom:.4em}
+.mw input.gr{background:#5f8a2c}.mw select{width:100%;background:#1f1f1f;color:#fff;border:1px solid #111;padding:.5em;font-size:1em;border-radius:0}
+.opts>div{margin-top:.3em}#j_st{margin-top:8px;white-space:pre-line}
+#bar div b{position:absolute;right:2px;bottom:0;font:11px monospace;color:#fff;text-shadow:1px 1px 0 #000}
+#grid div{position:relative}#grid div b{position:absolute;right:3px;bottom:1px;font:12px monospace;color:#fff;text-shadow:1px 1px 0 #000}
 #b_cam{position:fixed;top:max(6px,env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:30;padding:8px 14px;font-size:14px;opacity:.85;display:none}
 #ib{position:fixed;top:max(6px,env(safe-area-inset-top,0px));right:max(6px,env(safe-area-inset-right,0px));z-index:30;display:flex;gap:6px}
 #ib button{width:44px;height:44px;padding:0;font-size:20px;opacity:.75}
@@ -49,12 +71,23 @@ small{opacity:.7;max-width:560px}
 <div id="bar"></div>
 <button id="b_cam">👁 1st</button>
 <div id="ib"><button id="b_inv">🎒</button><button id="b_menu">☰</button></div>
-<div id="tp"><button id="tj">Jump</button><button id="tpl">Place</button><button id="td">Dig</button></div>
+<div id="tp"><button id="tj">Jump</button></div>
 <div id="jb"><div id="jk"></div></div>
 <div id="hearts"></div><div id="hurt"></div><div id="toast"></div>
+<div id="main" class="pn"><i style="left:-6%;top:44%;width:30%;height:13%"></i><i style="left:60%;top:6%;width:38%;height:11%"></i><i style="left:10%;top:72%;width:40%;height:10%"></i><i style="left:72%;top:60%;width:32%;height:12%"></i>
+<div class="brand">minedust</div><div class="logo">MINEDUST</div>
+<div class="mw"><div class="tabs"><button class="tab on" data-t="t_start">Start Game</button><button class="tab" data-t="t_join">Join Game</button><span style="flex:1"></span><button id="gear" class="gear">⚙</button></div>
+<div class="tb" id="t_start"><div class="cols"><div class="opts"><label class="ck"><input type="checkbox" id="o_cre"><span>Creative Mode</span></label><label class="ck"><input type="checkbox" id="o_dmg"><span>Enable Damage</span></label><label class="ck"><input type="checkbox" id="o_host"><span>Host Server</span></label></div>
+<div class="wl"><div>Select World:</div><div id="wlist"></div><div class="row"><button class="mb" id="w_del">Delete</button><button class="mb" id="w_new">New</button></div><div class="row end"><button class="mb big" id="w_play">Play Game</button></div></div></div></div>
+<div class="tb" id="t_join" style="display:none"><div class="opts" style="max-width:420px"><div>Join code:</div><input id="j_code" maxlength="12" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Paste code"><div class="row"><button class="mb big" id="j_go">Join</button></div><div id="j_st"></div></div></div></div></div>
+<div id="newworld" class="pn"><div class="brand">minedust</div><div class="logo">MINEDUST</div>
+<div class="mw tb"><div class="cols"><div class="opts"><div>World name</div><input id="n_name" class="gr" maxlength="24" autocomplete="off"><div>Seed</div><input id="n_seed" maxlength="20" autocomplete="off"><div>Mapgen</div><select id="n_mg"><option value="v7">v7</option><option value="flat">flat</option></select></div>
+<div class="opts"><div>Mapgen flags</div><label class="ck"><input type="checkbox" id="f_caves" checked><span>Caves</span></label><label class="ck"><input type="checkbox" id="f_dungeons" checked><span>Dungeons</span></label><label class="ck"><input type="checkbox" id="f_deco" checked><span>Decorations</span></label>
+<div>Mapgen-specific flags</div><label class="ck"><input type="checkbox" id="f_caverns" checked><span>Caverns</span></label><label class="ck"><input type="checkbox" id="f_rivers" checked><span>Rivers</span></label><label class="ck"><input type="checkbox" id="f_mountains" checked><span>Mountains</span></label><label class="ck"><input type="checkbox" id="f_float"><span>Floatlands (experimental)</span></label></div></div>
+<div class="row mid"><button class="mb big" id="n_cancel">Cancel</button><button class="mb big" id="n_create">Create</button></div></div></div>
 <div id="menu" class="pn"><h1>minedust</h1><div id="mp">Multiplayer: offline</div>
-<button id="play">Play</button><button id="m_inv">Inventory</button><button id="m_set">Settings</button><button id="m_join">Join game</button><button id="m_new">New random world</button><div id="ws"></div>
-<small>WASD move · V / F5 camera · Space jump · Shift sneak · J fast · K fly · Click dig · Right-click place · 1-9 / wheel hotbar · E inventory · Esc menu</small></div>
+<button id="play">Resume</button><button id="m_inv">Inventory</button><button id="m_set">Settings</button><button id="m_quit">Quit to main menu</button>
+<small>WASD move · V camera · Space jump · Shift sneak · J fast · K fly (creative) · Click dig · Right-click place · 1-9 / wheel hotbar · E inventory · Esc menu<br>Touch: tap = place · long press = break</small></div>
 <div id="inv" class="pn"><h2>Inventory</h2><small>Select a hotbar slot below, then tap a block to put it there.</small><div id="grid"></div><button class="cl">Close</button></div>
 <div id="set" class="pn"><h2>Settings</h2><div id="sc"></div><button class="cl">Close</button></div>
 <div id="rot">Rotate your device to landscape</div>
@@ -73,6 +106,7 @@ const low=/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)||(navigator.ha
 const DEF={preset:'Auto',res:low?70:100,dist:low?4:7,fps:60,dyn:1,fog:1,parts:low?0:1,gl:2,power:'default',prec:'mediump',aa:0,ms:.2,aj:1,fov:72,bob:100,touch:1.5,w:4,f:20,j:6.5,g:9.81};
 const S=Object.assign({},DEF,saved.S);
 let hot=(saved.hot||[]).length===9&&saved.hot.every(i=>BL[i])?saved.hot:['grass','dirt','stone','cobble','wood','tree','leaves','glass','brick'].map(n=>ID[n]);
+for(const[k,v]of Object.entries({cre:1,dmg:1,host:0}))if(S[k]===undefined)S[k]=v;
 const sv=()=>{try{localStorage.setItem(KEY,JSON.stringify({S,hot}))}catch(e){}};
 // ---------- renderer ----------
 const cv=$('c'),attr={antialias:!!S.aa,powerPreference:S.power,alpha:false,stencil:false,depth:true};
@@ -105,16 +139,24 @@ const hh=(x,z)=>{let h=Math.imul(x,374761393)^Math.imul(z,668265263)^Math.imul(S
 const sm=t=>t*t*(3-2*t);
 function vn(x,z){const i=Math.floor(x),j=Math.floor(z),fx=sm(x-i),fz=sm(z-j),a=hh(i,j),b=hh(i+1,j),c=hh(i,j+1),d=hh(i+1,j+1);return a+(b-a)*fx+(c-a)*fz+(a-b-c+d)*fx*fz}
 const temp=(x,z)=>vn(x/55+100,z/55+100);
-function genWorld(seed,wt){SEED=seed;worldT=wt||Date.now();D.fill(0);HM.fill(0);for(const k in edits)delete edits[k];
-for(let x=0;x<W;x++)for(let z=0;z<W;z++){const h=Math.floor(14+vn(x/40,z/40)*14+vn(x/16,z/16)*5+vn(x/6,z/6)*1.5),t=temp(x,z);HM[z*W+x]=h;
- const des=t<.38,snow=t>.68||h>30,beach=h<=16;
+let GEN={mg:'v7',fl:{caves:1,dungeons:1,deco:1,caverns:1,rivers:1,mountains:1,float:0}};
+function genWorld(seed,wt,g){SEED=seed;worldT=wt||Date.now();if(g)GEN={mg:g.mg||'v7',fl:Object.assign({},g.fl)};
+const F=GEN.fl,flat=GEN.mg==='flat';D.fill(0);HM.fill(0);for(const k in edits)delete edits[k];
+for(let x=0;x<W;x++)for(let z=0;z<W;z++){
+ let h=flat?16:Math.floor(14+vn(x/40,z/40)*(F.mountains?14:6)+vn(x/16,z/16)*(F.mountains?5:2.5)+vn(x/6,z/6)*1.5+(F.mountains?Math.max(0,vn(x/70+50,z/70+50)-.55)*55:0));
+ if(F.rivers&&!flat&&Math.abs(vn(x/45+300,z/45+300)-.5)<.03)h=Math.min(h,15);
+ h=Math.max(4,Math.min(h,H-11));HM[z*W+x]=h;const t=temp(x,z),des=t<.38,snow=t>.68||h>30,beach=h<=16&&!flat;
  for(let y=0;y<=h;y++){let id=3;
   if(y===0)id=ID.obsidian;
   else if(y>h-3){id=des?ID.desert_sand:beach?ID.sand:snow?(y===h?ID.snow:ID.dirt):(y===h?ID.grass:ID.dirt);if(des&&y<h-1)id=ID.desert_stone}
   else if(des)id=ID.desert_stone;
   else if(y<h-4){const o=hh(x*31+y,z*17+y*5);if(o<.03)id=o<.014?ID.coal_ore:o<.02?ID.iron_ore:o<.024?ID.copper_ore:o<.027?ID.tin_ore:o<.0285?ID.gold_ore:y<14&&o<.0295?ID.diamond_ore:ID.mese_ore}
+  if(y>3&&y<h-3){if(F.caves&&Math.abs(vn(x/12+y/9,z/12+y/7)-.5)<.07&&Math.abs(vn(x/17-y/11+40,z/17+y/13+40)-.5)<.09)id=0;else if(F.caverns&&y<14&&vn(x/20+y/6,z/20-y/6+90)*.6+vn(x/9,z/9+y/4)*.4>.75)id=0}
   D[ix(x,y,z)]=id}}
-for(let x=3;x<W-3;x+=5)for(let z=3;z<W-3;z+=5){const px=x+(hh(x,z)*3|0),pz=z+(hh(z,x)*3|0);if(hh(px,pz)>.5)continue;const h=HM[pz*W+px],s=D[ix(px,h,pz)],r=hh(pz,px);
+if(F.dungeons)for(let i=0;i<8;i++){const cx=8+(hh(i,771)*(W-24)|0),cz=8+(hh(i,991)*(W-24)|0),cy=5+(hh(i,555)*8|0);if(cy+8>=HM[(cz+4)*W+cx+4]-3)continue;
+ for(let dx=0;dx<9;dx++)for(let dz=0;dz<9;dz++)for(let dy=0;dy<6;dy++){const e=dx===0||dz===0||dx===8||dz===8||dy===0||dy===5;D[ix(cx+dx,cy+dy,cz+dz)]=e?(dy===0?ID.stone_block:ID.cobble):0}}
+if(F.float)for(let x=0;x<W;x++)for(let z=0;z<W;z++){const f=vn(x/26+500,z/26+500);if(f>.62){const th=Math.min(6,1+((f-.62)*40|0));for(let k=0;k<th;k++){const y=40-k;if(!D[ix(x,y,z)])D[ix(x,y,z)]=k===0?ID.grass:k<3?ID.dirt:ID.stone}}}
+if(F.deco)for(let x=3;x<W-3;x+=5)for(let z=3;z<W-3;z+=5){const px=x+(hh(x,z)*3|0),pz=z+(hh(z,x)*3|0);if(hh(px,pz)>.5)continue;const h=HM[pz*W+px],s=D[ix(px,h,pz)],r=hh(pz,px);
  if(s===ID.desert_sand){if(r<.4)for(let y=1;y<=2+(r*5|0);y++)put(px,h+y,pz,ID.cactus);continue}
  const pine=s===ID.snow,tr=pine?ID.pine_tree:r<.5?ID.tree:ID.aspen_tree,lf=ID.leaves;if(s!==ID.grass&&!pine)continue;const th=pine?6:4+(r*3|0);
  for(let y=1;y<=th;y++)put(px,h+y,pz,tr);
@@ -163,7 +205,7 @@ hs.add(hg);hg.add(held);hg.add(arm);held.scale.setScalar(.3);arm.position.set(.1
 function cubeGeo(id){const a={P:[],U:[],C:[],I:[]};for(let f=0;f<6;f++)face(a,0,0,0,f,id);a.P=a.P.map(v=>v-.5);return geo(a,false)}
 let sel=0,eq=0,swing=0;
 function setSel(i){sel=(i+9)%9;eq=0;held.geometry.dispose();held.geometry=cubeGeo(hot[sel]);drawBar()}
-function drawBar(){const b=$('bar');b.innerHTML='';hot.forEach((id,i)=>{const d=document.createElement('div');d.style.backgroundImage=icon(id);if(i===sel)d.className='on';d.innerHTML='<i>'+(i+1)+'</i>';d.onclick=()=>setSel(i);b.appendChild(d)})}
+function drawBar(){const b=$('bar');b.innerHTML='';hot.forEach((id,i)=>{const d=document.createElement('div');d.style.backgroundImage=icon(id);if(i===sel)d.className='on';d.innerHTML='<i>'+(i+1)+'</i>'+(S.cre?'':'<b>'+(inv[id]||0)+'</b>');if(!S.cre&&!(inv[id]>0))d.style.opacity=.45;d.onclick=()=>setSel(i);b.appendChild(d)})}
 // ---------- particles ----------
 const NP=40,pp=new Float32Array(NP*3).fill(-999),pc=new Float32Array(NP*3),pv=new Float32Array(NP*3),pt=new Float32Array(NP);
 const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pp,3));pg.setAttribute('color',new THREE.BufferAttribute(pc,3));
@@ -175,26 +217,26 @@ const box=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1
 let mp=null;const edits={};
 function setB(x,y,z,id,net){if(x<0||z<0||y<0||x>=W||z>=W||y>=H)return;D[ix(x,y,z)]=id;const cx=x/CS|0,cz=z/CS|0;build(cx,cz);
  if(x%CS===0&&cx>0)build(cx-1,cz);if(x%CS===CS-1&&cx<NC-1)build(cx+1,cz);if(z%CS===0&&cz>0)build(cx,cz-1);if(z%CS===CS-1&&cz<NC-1)build(cx,cz+1);
- if(net){edits[x+','+y+','+z]=[x,y,z,id];mp&&mp.base.child('edits/'+x+'_'+y+'_'+z).set(id).catch(()=>{})}}
-function dig(){swing=1;if(mp){const k=hitPlayer();if(k){mp.base.child('hits/'+k).push({f:MYID}).catch(()=>{});return}}const h=ray();if(h&&get(h.x,h.y,h.z)!==ID.obsidian||h&&h.y>0){const id=get(h.x,h.y,h.z);burst(h.x,h.y,h.z,id);setB(h.x,h.y,h.z,0,true)}}
-function place(){swing=1;const h=ray();if(!h||!h.prev)return;const[x,y,z]=h.prev,id=hot[sel];D[ix(x,y,z)]=id;const bad=hit(pl.p);D[ix(x,y,z)]=0;if(!bad)setB(x,y,z,id,true)}
+ if(net){edits[x+','+y+','+z]=[x,y,z,id];saveSoon();mp&&mp.base.child('edits/'+x+'_'+y+'_'+z).set(id).catch(()=>{})}}
+function dig(){swing=1;if(mp){const k=hitPlayer();if(k){mp.base.child('hits/'+k).push({f:MYID}).catch(()=>{});return}}const h=ray();if(h&&get(h.x,h.y,h.z)!==ID.obsidian||h&&h.y>0){const id=get(h.x,h.y,h.z);burst(h.x,h.y,h.z,id);setB(h.x,h.y,h.z,0,true);if(!S.cre)give(drop(id))}}
+function place(){swing=1;const h=ray();if(!h||!h.prev)return;const[x,y,z]=h.prev,id=hot[sel];if(!S.cre&&!(inv[id]>0))return;D[ix(x,y,z)]=id;const bad=hit(pl.p);D[ix(x,y,z)]=0;if(!bad){setB(x,y,z,id,true);if(!S.cre){inv[id]--;drawBar();saveSoon()}}}
 // ---------- UI / fullscreen / input ----------
-let ui='menu',started=false,locked=false,digH=0,plH=0,dcd=0,fsT=0;
+let ui='main',started=false,locked=false,digH=0,plH=0,dcd=0,fsT=0;
 async function fsLand(){const n=performance.now();if(n-fsT<400)return;fsT=n;const e=document.documentElement;
  try{if(!document.fullscreenElement&&!document.webkitFullscreenElement)await(e.requestFullscreen?e.requestFullscreen({navigationUI:'hide'}):e.webkitRequestFullscreen())}catch(x){}
  try{await screen.orientation.lock('landscape')}catch(x){}}
-const panels=['menu','inv','set'];
-function show(n){ui=n;$('b_cam').style.display=started&&!n?'block':'none';$('hearts').style.display=started&&!n?'flex':'none';panels.forEach(p=>$(p).style.display=p===n?'flex':'none');$('tp').style.display=!n&&touch?'flex':'none';$('hud').style.display=started?'block':'none';$('bar').style.display=started?'flex':'none';
- if(n&&document.pointerLockElement)document.exitPointerLock();if(n==='inv')buildInv();if(n==='set')buildSet();if(n==='menu'){$('play').textContent=started?'Resume':'Play';$('ws').textContent='World seed: '+SEED}}
+const panels=['menu','inv','set','main','newworld'];
+function show(n){ui=n;$('b_cam').style.display=started&&!n?'block':'none';$('hearts').style.display=started&&!n&&S.dmg?'flex':'none';panels.forEach(p=>$(p).style.display=p===n?'flex':'none');$('tp').style.display=!n&&touch?'flex':'none';$('hud').style.display=started?'block':'none';$('bar').style.display=started?'flex':'none';
+ if(n&&document.pointerLockElement)document.exitPointerLock();if(n==='inv')buildInv();if(n==='set')buildSet();if(n==='main')renderW()}
 function resume(){started=true;show(null);fsLand();if(!touch)cv.requestPointerLock()}
-$('play').onclick=resume;$('m_inv').onclick=()=>show('inv');$('m_set').onclick=()=>show('set');$('m_new').onclick=()=>{leaveMP('Hosting was reset by starting a new world');genWorld(Math.random()*2147483647|0);resume()};
+$('play').onclick=resume;$('m_inv').onclick=()=>show('inv');$('m_set').onclick=()=>show('set');$('m_quit').onclick=quitToMenu;
 const VL=['👁 1st','🧍 3rd','🧍 3rd front'];function cycleView(){view=(view+1)%3;$('b_cam').textContent=VL[view]}$('b_cam').onclick=cycleView;$('b_inv').onclick=()=>show('inv');$('b_menu').onclick=()=>show('menu');
-document.querySelectorAll('.cl').forEach(b=>b.onclick=()=>show('menu'));
+document.querySelectorAll('.cl').forEach(b=>b.onclick=()=>show(started?'menu':'main'));
 $('b_inv').style.display=$('b_menu').style.display='flex';$('ib').style.display='none';
 document.addEventListener('pointerlockchange',()=>{locked=document.pointerLockElement===cv;if(!locked&&!ui&&started&&!touch)show('menu')});
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&started&&!ui&&touch)show('menu')});
 ['pointerdown','pointerup','touchend','keydown'].forEach(ev=>addEventListener(ev,()=>{if(!document.fullscreenElement)fsLand()},true));fsLand();
-function buildInv(){const g=$('grid');g.innerHTML='';BL.forEach((b,i)=>{if(!b)return;const d=document.createElement('div');d.title=b.n.replace(/_/g,' ');d.style.backgroundImage=icon(i);d.onclick=()=>{hot[sel]=i;setSel(sel);sv()};g.appendChild(d)})}
+function buildInv(){const g=$('grid');g.innerHTML='';BL.forEach((b,i)=>{if(!b||(!S.cre&&!(inv[i]>0)))return;const d=document.createElement('div');d.title=b.n.replace(/_/g,' ');if(!S.cre)d.innerHTML='<b>'+inv[i]+'</b>';d.style.backgroundImage=icon(i);d.onclick=()=>{hot[sel]=i;setSel(sel);sv()};g.appendChild(d)})}
 const SET=[['Graphics'],['preset','Preset','sel',['Auto','Low','Medium','High']],['res','Resolution scale %','rng',30,100,5],['dist','Render distance (chunks)','rng',2,8,1],['fps','FPS limit','sel',[[30,'30'],[60,'60'],[120,'120'],[0,'Unlimited']]],['dyn','Dynamic resolution','chk'],['fog','Fog','chk'],['parts','Block particles','chk'],
 ['Graphics driver (needs restart)'],['gl','WebGL version','sel',[[2,'WebGL 2'],[1,'WebGL 1']],1],['power','GPU preference','sel',['default','high-performance','low-power'],1],['prec','Shader precision','sel',['lowp','mediump','highp'],1],['aa','Antialiasing','chk',0,1],
 ['Controls'],['aj','Auto jump','chk'],['ms','Mouse sensitivity','rng',.05,1,.05],['touch','Touch look speed','rng',.5,4,.25],['fov','Field of view','rng',45,110,1],['bob','View bobbing %','rng',0,200,10],
@@ -219,7 +261,7 @@ const keys={};
 addEventListener('keydown',e=>{if(e.repeat&&e.code!=='Space')return;keys[e.code]=1;
  if(e.code==='KeyE'||e.code==='KeyI'){if(ui==='inv')resume();else if(!ui)show('inv');return}
  if(e.code==='Escape'&&ui&&ui!=='menu'&&started){show('menu');return}
- if(ui)return;if(e.code==='KeyV'||e.code==='F5'){cycleView();e.preventDefault()}if(e.code==='KeyJ')pl.fast=!pl.fast;if(e.code==='KeyK')pl.fly=!pl.fly;if(/^Digit[1-9]$/.test(e.code))setSel(+e.code[5]-1)});
+ if(ui)return;if(e.code==='KeyV'||e.code==='F5'){cycleView();e.preventDefault()}if(e.code==='KeyJ')pl.fast=!pl.fast;if(e.code==='KeyK'&&S.cre)pl.fly=!pl.fly;if(/^Digit[1-9]$/.test(e.code))setSel(+e.code[5]-1)});
 addEventListener('keyup',e=>keys[e.code]=0);
 addEventListener('wheel',e=>{if(!ui)setSel(sel+(e.deltaY>0?1:-1))},{passive:true});
 function look(dx,dy,k){k*=Math.PI/180*1.2;pl.yaw-=dx*k;pl.pit=Math.max(-1.55,Math.min(1.55,pl.pit-dy*k))}
@@ -228,11 +270,14 @@ cv.addEventListener('mousedown',e=>{if(!locked)return;if(e.button===0){digH=1;dc
 addEventListener('mouseup',e=>{digH=plH=0});cv.addEventListener('contextmenu',e=>e.preventDefault());
 // touch
 let mv=[0,0];const tch={};
-cv.addEventListener('touchstart',e=>{if(ui)return;for(const t of e.changedTouches){const m=t.clientX<innerWidth/2;tch[t.identifier]={x:t.clientX,y:t.clientY,m};if(m){$('jb').style.cssText=`display:block;left:${t.clientX}px;top:${t.clientY}px`;$('jk').style.transform=''}}},{passive:true});
-cv.addEventListener('touchmove',e=>{for(const t of e.changedTouches){const s=tch[t.identifier];if(!s)continue;if(s.m){let dx=t.clientX-s.x,dy=t.clientY-s.y;const l=Math.hypot(dx,dy);if(l>50){dx*=50/l;dy*=50/l}mv=[dx/50,dy/50];$('jk').style.transform=`translate(${dx}px,${dy}px)`}else{look(t.clientX-s.x,t.clientY-s.y,S.touch*S.ms*2);s.x=t.clientX;s.y=t.clientY}}},{passive:true});
-const tend=e=>{for(const t of e.changedTouches){if(tch[t.identifier]&&tch[t.identifier].m){mv=[0,0];$('jb').style.display='none'}delete tch[t.identifier]}};cv.addEventListener('touchend',tend,{passive:true});cv.addEventListener('touchcancel',tend,{passive:true});
+cv.addEventListener('touchstart',e=>{if(ui)return;for(const t of e.changedTouches){const m=t.clientX<innerWidth/2,s=tch[t.identifier]={x:t.clientX,y:t.clientY,sx:t.clientX,sy:t.clientY,m,t0:performance.now(),moved:0,long:0};
+ if(m){$('jb').style.cssText=`display:block;left:${t.clientX}px;top:${t.clientY}px`;$('jk').style.transform=''}else s.tm=setTimeout(()=>{if(!s.moved){s.long=1;digH=1;dcd=0}},350)}},{passive:true});
+cv.addEventListener('touchmove',e=>{for(const t of e.changedTouches){const s=tch[t.identifier];if(!s)continue;if(s.m){let dx=t.clientX-s.x,dy=t.clientY-s.y;const l=Math.hypot(dx,dy);if(l>50){dx*=50/l;dy*=50/l}mv=[dx/50,dy/50];$('jk').style.transform=`translate(${dx}px,${dy}px)`}
+ else{if(!s.moved&&Math.hypot(t.clientX-s.sx,t.clientY-s.sy)>14){s.moved=1;clearTimeout(s.tm);if(s.long){s.long=0;digH=0}}if(s.moved){look(t.clientX-s.x,t.clientY-s.y,S.touch*S.ms*2);s.x=t.clientX;s.y=t.clientY}}}},{passive:true});
+const tend=e=>{for(const t of e.changedTouches){const s=tch[t.identifier];if(!s)continue;if(s.m){mv=[0,0];$('jb').style.display='none'}else{clearTimeout(s.tm);if(s.long)digH=0;else if(!s.moved&&e.type==='touchend'&&performance.now()-s.t0<350)place()}delete tch[t.identifier]}};
+cv.addEventListener('touchend',tend,{passive:true});cv.addEventListener('touchcancel',tend,{passive:true});
 const hold=(id,f)=>{const b=$(id);b.addEventListener('touchstart',e=>{e.preventDefault();f(1)},{passive:false});b.addEventListener('touchend',()=>f(0));b.addEventListener('touchcancel',()=>f(0))};
-hold('tj',v=>keys.Space=v);hold('td',v=>{digH=v;dcd=0});hold('tpl',v=>{plH=v;dcd=0});
+hold('tj',v=>keys.Space=v);
 if(touch)$('ib').style.display='flex';
 // ---------- multiplayer ----------
 const others={};
@@ -249,7 +294,7 @@ async function fbReady(){
  if(!fbdb||fbUrl!==u){if(firebase.apps.length)await firebase.app().delete();firebase.initializeApp({databaseURL:u,projectId:'minedust'});fbdb=firebase.database();fbUrl=u}
  await new Promise((ok,no)=>{const r=fbdb.ref('.info/connected'),tm=setTimeout(()=>{r.off('value',f);no(new Error('timeout'))},9000),f=s=>{if(s.val()){clearTimeout(tm);r.off('value',f);ok()}};r.on('value',f)})}
 function mpMsg(m){mpTxt=m;mpRender()}
-function mpRender(){const n=Object.keys(others).length,st=mp?(mp.host?'Hosting':'Joined')+' · code '+mp.code+' · '+n+' other player(s)':'Not connected';
+function mpRender(){if($('j_st'))$('j_st').textContent=mpTxt;const n=Object.keys(others).length,st=mp?(mp.host?'Hosting':'Joined')+' · code '+mp.code+' · '+n+' other player(s)':'Not connected';
  if($('mp'))$('mp').textContent='Multiplayer: '+(mp?(mp.host?'hosting ':'joined ')+mp.code+' · '+n+' other(s)':'offline');
  if($('mps'))$('mps').textContent=st+(mpTxt?'\n'+mpTxt:'');
  const h=$('mp_host'),s=$('mp_stop');if(h){h.textContent=mp&&mp.host?'📋 Copy code '+mp.code:'Host game';h.disabled=!!mp&&!mp.host}if(s)s.style.display=mp?'block':'none'}
@@ -259,9 +304,9 @@ function mpHTML(){return `<div class=mpb><h3>Multiplayer</h3><div id=mps></div><
 function mpBind(){$('mp_host').onclick=()=>mp&&mp.host?copyCode(mp.code):mpHost();$('mp_stop').onclick=()=>leaveMP('Stopped');
  $('mp_join').onclick=()=>mpJoin($('mp_code').value);$('mp_code').onkeydown=e=>{if(e.key==='Enter')mpJoin($('mp_code').value)};
  $('mp_db').onchange=e=>{S.dbu=e.target.value.trim();sv();mpMsg('Database URL saved')};mpRender()}
-async function copyCode(c){try{await navigator.clipboard.writeText(c);mpMsg('Code '+c+' copied — send it to your friends')}catch(e){mpMsg('Code: '+c+' (tap and copy it manually)')}}
+async function copyCode(c){try{await navigator.clipboard.writeText(c);mpMsg('Code '+c+' copied — send it to your friends');toast('Code '+c+' copied')}catch(e){mpMsg('Code: '+c+' (tap and copy it manually)')}}
 const dirty=(x,z)=>{const cx=x/CS|0,cz=z/CS|0,m=(a,b)=>{if(a>=0&&b>=0&&a<NC&&b<NC)ch[b*NC+a].d=1};m(cx,cz);if(x%CS===0)m(cx-1,cz);if(x%CS===CS-1)m(cx+1,cz);if(z%CS===0)m(cx,cz-1);if(z%CS===CS-1)m(cx,cz+1)};
-function onEdit(s){const[x,y,z]=s.key.split('_').map(Number),id=s.val();edits[x+','+y+','+z]=[x,y,z,id];if(get(x,y,z)===id)return;put(x,y,z,id);dirty(x,z)}
+function onEdit(s){saveSoon();const[x,y,z]=s.key.split('_').map(Number),id=s.val();edits[x+','+y+','+z]=[x,y,z,id];if(get(x,y,z)===id)return;put(x,y,z,id);dirty(x,z)}
 function onPl(s){if(s.key===MYID)return;const v=s.val();if(!v||!v.p)return;const o=others[s.key]||(others[s.key]=avatar());o.tp.set(v.p[0],v.p[1],v.p[2]);o.yaw=v.r;mpRender()}
 function attach(code,host){const base=fbdb.ref('rooms/'+code);mp={code,host,base,off:[],me:base.child('players/'+MYID),ready:0};
  const on=(r,ev,fn)=>{r.on(ev,fn);mp.off.push(()=>r.off(ev,fn))};
@@ -275,26 +320,53 @@ function leaveMP(msg){if(!mp){if(msg)mpMsg(msg);return}const m=mp;mp=null;m.off.
 const newCode=()=>{const a='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<6;i++)c+=a[Math.random()*a.length|0];return c};
 async function mpHost(){if(mp)return;mpMsg('Connecting…');
  try{await fbReady();let code,i=0;do{code=newCode();if(!(await fbdb.ref('rooms/'+code+'/meta').once('value')).exists())break}while(++i<6);
-  const base=fbdb.ref('rooms/'+code);await base.child('meta').set({seed:SEED,t:worldT,host:MYID,at:firebase.database.ServerValue.TIMESTAMP});
+  const base=fbdb.ref('rooms/'+code);await base.child('meta').set({seed:SEED,t:worldT,gen:GEN,host:MYID,at:firebase.database.ServerValue.TIMESTAMP});
   const ed={};for(const k in edits){const e=edits[k];ed[e[0]+'_'+e[1]+'_'+e[2]]=e[3]}if(Object.keys(ed).length)await base.child('edits').update(ed);
   attach(code,true);copyCode(code)}catch(e){mpMsg('Could not host. Check the Database URL (region) and that the database rules allow "rooms".')}}
 async function mpJoin(c){c=(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length!==6)return mpMsg('Enter the 6-character code');if(mp&&mp.code===c)return mpMsg('Already in this game');
  mpMsg('Joining…');try{await fbReady();const s=await fbdb.ref('rooms/'+c+'/meta').once('value');if(!s.exists())return mpMsg('Code not found — ask the host for a fresh code');
-  if(mp)leaveMP();const m=s.val();genWorld(m.seed,m.t);attach(c,false);mpMsg('Joined '+c);resume()}catch(e){mpMsg('Could not join. Check the Database URL (region) and rules.')}}
-$('m_join').onclick=()=>{show('set');setTimeout(()=>{const i=$('mp_code');i.scrollIntoView({block:'center'});i.focus()},60)};
+  if(mp)leaveMP();const m=s.val();genWorld(m.seed,m.t,m.gen||{mg:'v7',fl:DFL});cur=null;attach(c,false);mpMsg('Joined '+c);resume()}catch(e){mpMsg('Could not join. Check the Database URL (region) and rules.')}}
 // ---------- health: 9 hearts, fall damage (8+ blocks), player attacks ----------
 const HEART="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMBAMAAACkW0HUAAAAKlBMVEUAYQBgAABnAABoAABwAACPAACfAACvAAC3AAC/AADfAAD3AAD+AAD/AAB1BtoLAAAAAXRSTlMAQObYZgAAAE5JREFUCNdjYE0LACKGqLtLgYgh9+41IAJSd84Cqai7QLCUgRNETWBgWXv37i0HBoaau3ePMzAwaNy92wSkmKu3GwApBvFCEMnApMDAAACP5SGK6NtKaQAAAABJRU5ErkJggg==",GONE="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4AWNgYAAAAAMAAYz4OToAAAAASUVORK5CYII=";
-let hp=9,lastDmg=0,regenAt=0,lastHit=0,invUntil=0,fallReset=1;pl.peak=0;
-const hbox=$('hearts');for(let i=0;i<9;i++){const im=new Image();im.draggable=false;hbox.appendChild(im)}
+let hp=8,lastDmg=0,regenAt=0,lastHit=0,invUntil=0,fallReset=1;pl.peak=0;
+const hbox=$('hearts');for(let i=0;i<8;i++){const im=new Image();im.draggable=false;hbox.appendChild(im)}
 function drawHearts(){[...hbox.children].forEach((im,i)=>im.src=i<hp?HEART:GONE)}
 function toast(m){const e=$('toast');e.textContent=m;e.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.opacity=0,1800)}
-function hurt(n,src){hp=Math.max(0,hp-n);lastDmg=performance.now();drawHearts();const h=$('hurt');h.style.transition='none';h.style.opacity=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{h.style.transition='opacity .5s';h.style.opacity=0}));if(hp<=0)die(src)}
-function die(src){toast(src==='fall'?'You fell to your death':src==='pvp'?'You were killed':'You died');hp=9;invUntil=performance.now()+2500;lastDmg=performance.now();spawn();drawHearts()}
+function hurt(n,src){if(!S.dmg)return;hp=Math.max(0,hp-n);lastDmg=performance.now();drawHearts();const h=$('hurt');h.style.transition='none';h.style.opacity=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{h.style.transition='opacity .5s';h.style.opacity=0}));if(hp<=0)die(src)}
+function die(src){toast(src==='fall'?'You fell to your death':src==='pvp'?'You were killed':'You died');hp=8;invUntil=performance.now()+2500;lastDmg=performance.now();spawn();drawHearts()}
 function hitPlayer(){for(let t=0;t<4;t+=.05){const x=eye.x+fwd.x*t,y=eye.y+fwd.y*t,z=eye.z+fwd.z*t;if(get(Math.floor(x),Math.floor(y),Math.floor(z)))return null;
  for(const k in others){const p=others[k].g.position;if(Math.abs(x-p.x)<.4&&Math.abs(z-p.z)<.4&&y>p.y-.1&&y<p.y+1.9)return k}}return null}
 drawHearts();
+// ---------- main menu: worlds, new world, join ----------
+const WK='minedust-worlds',DFL={caves:1,dungeons:1,deco:1,caverns:1,rivers:1,mountains:1,float:0};
+let worlds=[],wsel=0,cur=null,inv={},svT=0;
+try{worlds=JSON.parse(localStorage.getItem(WK)||'[]')}catch(e){}
+if(!worlds.length)worlds=[{name:'world1',seed:Math.random()*2147483647|0,mg:'v7',fl:Object.assign({},DFL)}];
+const saveW=()=>{try{localStorage.setItem(WK,JSON.stringify(worlds))}catch(e){}};
+const drop=id=>id===ID.grass?ID.dirt:id;
+function give(id){inv[id]=(inv[id]||0)+1;drawBar();saveSoon()}
+function flushSave(){clearTimeout(svT);if(!cur||(mp&&!mp.host))return;try{localStorage.setItem('minedust-ed-'+cur.name,JSON.stringify({e:Object.values(edits),inv}))}catch(e){}}
+function saveSoon(){clearTimeout(svT);svT=setTimeout(flushSave,1200)}
+addEventListener('pagehide',flushSave);document.addEventListener('visibilitychange',()=>{if(document.hidden)flushSave()});
+function renderW(){const l=$('wlist');l.innerHTML='';worlds.forEach((w,i)=>{const d=document.createElement('div');d.textContent=w.name;if(i===wsel)d.className='on';d.onclick=()=>{wsel=i;renderW()};l.appendChild(d)});
+ $('o_cre').checked=!!S.cre;$('o_dmg').checked=!!S.dmg;$('o_host').checked=!!S.host}
+[['o_cre','cre'],['o_dmg','dmg'],['o_host','host']].forEach(([id,k])=>$(id).onchange=e=>{S[k]=+e.target.checked;sv()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));['t_start','t_join'].forEach(id=>$(id).style.display=id===b.dataset.t?'block':'none')});
+$('gear').onclick=()=>show('set');
+$('w_del').onclick=()=>{const w=worlds[wsel];if(!w||!confirm('Delete world "'+w.name+'"?'))return;try{localStorage.removeItem('minedust-ed-'+w.name)}catch(e){}worlds.splice(wsel,1);if(!worlds.length)worlds.push({name:'world1',seed:Math.random()*2147483647|0,mg:'v7',fl:Object.assign({},DFL)});wsel=0;saveW();renderW()};
+$('w_new').onclick=()=>{$('n_name').value='world'+(worlds.length+1);$('n_seed').value='';show('newworld')};
+$('n_cancel').onclick=()=>show('main');
+$('n_create').onclick=()=>{let name=($('n_name').value.trim()||'world'+(worlds.length+1)),n=name,i=2;while(worlds.some(w=>w.name===n))n=name+'_'+i++;
+ const s=$('n_seed').value.trim();let seed=s===''?Math.random()*2147483647|0:/^-?\d+$/.test(s)?Math.abs(parseInt(s,10))%2147483647:([...s].reduce((a,c)=>Math.imul(a,31)+c.charCodeAt(0)|0,7)>>>0)%2147483647;
+ const fl={};for(const k in DFL)fl[k]=+$('f_'+k).checked;worlds.push({name:n,seed,mg:$('n_mg').value,fl});wsel=worlds.length-1;saveW();show('main')};
+function startWorld(w){leaveMP();cur=w;genWorld(w.seed,Date.now(),w);inv={};let sd=null;try{sd=JSON.parse(localStorage.getItem('minedust-ed-'+w.name)||'null')}catch(e){}
+ if(sd){for(const e of sd.e||[]){edits[e[0]+','+e[1]+','+e[2]]=e;put(e[0],e[1],e[2],e[3])}inv=sd.inv||{}}
+ if(!S.cre)pl.fly=false;hp=8;drawHearts();drawBar();resume();if(S.host)mpHost()}
+$('w_play').onclick=()=>{if(worlds[wsel])startWorld(worlds[wsel])};
+function quitToMenu(){flushSave();leaveMP();started=false;cur=null;show('main')}
+$('j_go').onclick=()=>mpJoin($('j_code').value);$('j_code').onkeydown=e=>{if(e.key==='Enter')mpJoin($('j_code').value)};
 // ---------- loop ----------
-genWorld(Math.random()*2147483647|0);const me3=avatar();me3.g.visible=false;setSel(0);show('menu');applyLive();
+genWorld(Math.random()*2147483647|0);const me3=avatar();me3.g.visible=false;setSel(0);show('main');applyLive();
 let last=performance.now(),lp=0,fc=0,ft=0,fps=0,gt=0;
 function tick(now){requestAnimationFrame(tick);const el=now-last;if(S.fps&&el<1000/S.fps-1.5)return;const dt=Math.min(.05,el/1000);last=now;
  fc++;ft+=el;if(ft>=1000){fps=fc*1000/ft;const tg=S.fps||60;if(S.dyn&&started){if(fps<tg*.8&&dyn>.5){dyn-=.1;fit()}else if(fps>=tg*.95&&dyn<1&&(gt+=1)>=4){dyn=Math.min(1,dyn+.05);gt=0;fit()}}fc=0;ft=0}
@@ -305,7 +377,7 @@ function tick(now){requestAnimationFrame(tick);const el=now-last;if(S.fps&&el<10
   if(fallReset){fallReset=0;pl.peak=pl.p.y}
   move(dt);
   if(pl.fly)pl.peak=pl.p.y;else if(pl.gnd){const f=pl.peak-pl.p.y;pl.peak=pl.p.y;if(f>=8)hurt(Math.floor(f)-7,'fall')}else if(pl.p.y>pl.peak)pl.peak=pl.p.y;
-  {const nw=performance.now();if(hp<9&&nw-lastDmg>6000&&nw-regenAt>10000){hp++;regenAt=nw;drawHearts()}}
+  {const nw=performance.now();if(hp<8&&nw-lastDmg>6000&&nw-regenAt>10000){hp++;regenAt=nw;drawHearts()}}
   if(pl.p.y<-20)hurt(99,'void');
   dcd-=dt;if((digH||plH)&&dcd<=0){digH?dig():place();dcd=.2}
   if(pl.gnd||pl.fly)pl.bt+=spd*dt*1.7}
